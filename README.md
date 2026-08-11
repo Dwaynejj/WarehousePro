@@ -376,6 +376,41 @@ npx expo start -c
 
 Open the web app at `http://localhost:8081`, or use Expo Go on a device.
 
+### Hosting the frontend (Vercel)
+
+Backend API (already live): `https://warehousepro-7ajh.onrender.com`
+
+1. **Push** the latest frontend files (`vercel.json`, `app.json` web static output, `export:web` script).
+2. Go to [https://vercel.com](https://vercel.com) → **Add New…** → **Project** → import **WarehousePro**.
+3. Configure:
+   - **Root Directory:** `frontend`
+   - **Framework Preset:** Other
+   - **Build Command:** `npx expo export -p web` (from `vercel.json`)
+   - **Output Directory:** `dist`
+4. **Environment Variables** (Production) — copy from your local `frontend/.env`, but set the API to Render:
+
+   | Name | Value |
+   |---|---|
+   | `EXPO_PUBLIC_SUPABASE_URL` | same as local `.env` |
+   | `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | same as local `.env` |
+   | `EXPO_PUBLIC_API_BASE_URL` | `https://warehousepro-7ajh.onrender.com` |
+   | `EXPO_PUBLIC_ADMIN_INVITE_CODE` | same as local `.env` |
+
+5. Deploy. You’ll get a URL like `https://warehousepro-xxxx.vercel.app`.
+6. **Render CORS** — on the backend service → Environment → add:
+
+   | Key | Value |
+   |---|---|
+   | `CORS_ALLOWED_ORIGINS` | `https://warehousepro-xxxx.vercel.app` |
+
+   Then **Manual Deploy** → Restart / clear build cache not required; a restart is enough so Spring picks up the env.
+7. **Supabase Auth URLs** — Authentication → URL Configuration:
+   - Site URL: your Vercel URL
+   - Redirect URLs add: `https://YOUR-VERCEL-URL/auth/callback`  
+     (keep localhost if you still develop locally)
+
+8. Open the Vercel URL → Online chip should turn green (may take ~30s if Render was asleep).
+
 ### Environment
 
 | Variable | Purpose |
@@ -386,6 +421,7 @@ Open the web app at `http://localhost:8081`, or use Expo Go on a device.
 | `EXPO_PUBLIC_ADMIN_INVITE_CODE` | Secret string **you choose** — typed on `/admin/invite` to create admins (see [How do I get the admin invite code?](#how-do-i-get-the-admin-invite-code)) |
 
 **API URL tips**
+
 
 - Same machine browser → `http://localhost:8080`
 - Physical phone on Expo Go → machine **LAN IP**, e.g. `http://192.168.x.x:8080`
