@@ -17,7 +17,7 @@ export function useApiHealth(pollMs = 15000): ApiHealth & { refresh: () => void 
     const baseUrl = getApiBaseUrl();
     setHealth({ status: 'checking' });
     try {
-      const response = await fetch(`${baseUrl}/api/routes/analytics`, {
+      const response = await fetch(`${baseUrl}/api/health`, {
         method: 'GET',
         headers: { Accept: 'application/json' },
       });
@@ -34,7 +34,7 @@ export function useApiHealth(pollMs = 15000): ApiHealth & { refresh: () => void 
       setHealth({
         status: 'offline',
         baseUrl,
-        detail: 'No response — is Spring Boot running on port 8080?',
+        detail: 'No response from the API (it may be waking up — wait ~30s and Retry).',
       });
     }
   }, []);

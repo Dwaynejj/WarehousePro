@@ -19,8 +19,8 @@ export function describeApiError(error: unknown): string {
     if (/Could not reach the backend/i.test(error.message) || /Network request failed/i.test(error.message)) {
       return (
         `Backend offline or blocked. Expected API at ${getApiBaseUrl()}. ` +
-        'Run the Spring Boot server on port 8080, then Retry. ' +
-        'On a phone use your computer LAN IP instead of localhost.'
+        'If this is the hosted API, wait ~30s for it to wake up, then Retry. ' +
+        'Locally: start Spring Boot, or on a phone use your computer LAN IP instead of localhost.'
       );
     }
     return error.message;

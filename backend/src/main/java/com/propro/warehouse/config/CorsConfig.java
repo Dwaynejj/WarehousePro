@@ -33,7 +33,10 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 List<String> patterns = new ArrayList<>(List.of(
                         "http://localhost:*",
-                        "http://127.0.0.1:*"));
+                        "http://127.0.0.1:*",
+                        // Hosted Expo web (Vercel)
+                        "https://*.vercel.app",
+                        "https://warehouse-pro-kappa.vercel.app"));
 
                 if (extraOrigins != null && !extraOrigins.isBlank()) {
                     Arrays.stream(extraOrigins.split(","))

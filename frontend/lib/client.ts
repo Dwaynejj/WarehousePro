@@ -78,7 +78,7 @@ async function request(url: string, init: RequestInit): Promise<Response> {
         (usingLocalhost
           ? 'Start Spring Boot on port 8080 (mvn spring-boot:run in backend/). ' +
             'If you are on a physical phone, set EXPO_PUBLIC_API_BASE_URL to your computer LAN IP instead of localhost.'
-          : 'Confirm the phone and computer are on the same Wi‑Fi and the Spring Boot server is running.'),
+          : 'The hosted API may be waking up (Render free tier) — wait ~30s and retry. Also confirm CORS allows your frontend origin.'),
       { cause },
     );
   }

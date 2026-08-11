@@ -5,8 +5,22 @@ import { Platform } from 'react-native';
 // Read as static `process.env.X` member expressions. Expo's Babel plugin inlines
 // EXPO_PUBLIC_* vars at build time by matching this exact shape; computed access
 // such as process.env[name] is not inlined and resolves to undefined in the bundle.
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const rawSupabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const supabasePublishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+/**
+ * Project URL must be origin only, e.g. https://xxxx.supabase.co
+ * Dashboard “Data API” URLs that end in /rest/v1 break Auth (…/rest/v1/auth/v1/…).
+ */
+function normalizeSupabaseUrl(url: string): string {
+  return url
+    .trim()
+    .replace(/\/+$/, '')
+    .replace(/\/rest\/v1$/i, '')
+    .replace(/\/auth\/v1$/i, '');
+}
+
+const supabaseUrl = rawSupabaseUrl ? normalizeSupabaseUrl(rawSupabaseUrl) : rawSupabaseUrl;
 
 if (!supabaseUrl || !supabasePublishableKey) {
   throw new Error(
