@@ -1,50 +1,56 @@
-# Welcome to your Expo app 👋
+# WarehousePro Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo app for the WarehousePro capstone: a **picker** floor app and a **separate admin portal**.
 
-## Get started
+See the root [README.md](../README.md) for full project status and backend setup.
 
-1. Install dependencies
+## What’s in place
 
-   ```bash
-   npm install
-   ```
+- Picker: onboarding → signup/signin → pick queue → optimized route → confirm picks → complete  
+- Admin: `/admin/signin` → dashboard, create order, history (no public admin signup)  
+- Workflow step guides + API connection banner  
+- Typed API helpers against the Spring Boot backend  
 
-2. Start the app
+## Portals
 
-   ```bash
-   npx expo start
-   ```
+| Portal | Routes | Signup |
+|---|---|---|
+| Picker | `(auth)` → `(picker)` home / route / settings | Yes — always `role=picker` |
+| Admin | `/admin/signin` → `(admin)` tabs | Invite only (`/admin/invite` + env code) |
 
-In the output, you'll find options to open the app in a
+### Admin access (not on the picker home screen)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+1. Set `EXPO_PUBLIC_ADMIN_INVITE_CODE` in `.env`, then `npx expo start -c`
+2. **First account:** open `http://localhost:8081/admin/invite` → invite code + email/password **or Google**
+3. **Later:** open `http://localhost:8081/admin/signin` (email/password or Google)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### Google Auth
 
-## Get a fresh project
+Picker signup/signin and admin invite/signin all offer **Continue with Google** (Supabase OAuth).  
+Enable Google in the Supabase dashboard and add redirect URLs — see root README **Google Auth setup**.
 
-When you're ready, run:
+## Run
 
 ```bash
-npm run reset-project
+cp .env.example .env   # if needed
+npm install
+npx expo start -c
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- Web: `http://localhost:8081`  
+- Set `EXPO_PUBLIC_API_BASE_URL=http://localhost:8080` for same-machine browser  
+- Use a LAN IP for a physical device  
 
-## Learn more
+## Structure
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```text
+app/
+  (auth)/       picker onboarding, signup, signin
+  (picker)/     home, route, settings
+  (admin)/      dashboard, orders, history, settings
+  admin/        signin + invite (outside tab shells)
+components/     connection-banner, workflow-steps, warehouse-map, …
+lib/            client, api/routes, supabase, errors
+store/          active order
+types/          backend DTO mirrors
+```

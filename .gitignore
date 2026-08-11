@@ -4,14 +4,20 @@ backend/target/
 *.jar
 !.mvn/wrapper/maven-wrapper.jar
 
-# Profile carrying real database credentials - keep it local only
-backend/src/main/resources/application-supabase.properties
+# Secrets only — DB URL/user are in application-supabase.properties; password via env
+backend/.env
 
-# --- Frontend (Node/Next.js) ---
+# --- Frontend (Expo) ---
 frontend/node_modules/
 frontend/.next/
 frontend/out/
+frontend/dist/
+frontend/.env
 frontend/.env*.local
+
+# Local portable JDK/Maven used when system Java is missing
+.tools/
+.tmp-video-frames/
 
 # --- IDE / OS ---
 .idea/

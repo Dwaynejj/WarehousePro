@@ -15,7 +15,6 @@ const GUIDE_SECTIONS: GuideSection[] = [
     title: 'Getting started',
     steps: [
       'Create an account with your work email and a password.',
-      'Choose your role: Picker or Admin.',
       'Already have an account? Tap "Sign in" instead of signing up.',
     ],
   },
@@ -61,10 +60,9 @@ const GUIDE_SECTIONS: GuideSection[] = [
     id: 'managing-your-account',
     title: 'Managing your account',
     steps: [
-      'Settings holds your name, employee ID and role badge.',
-      'Edit your details and tap Save.',
-      'Change your password under Security.',
-      'Sign out at the bottom of Settings.',
+      'Open Profile to update your name, photo, and phone.',
+      'Edit your details and tap Save changes.',
+      'Sign out at the bottom of Profile.',
     ],
   },
 ];

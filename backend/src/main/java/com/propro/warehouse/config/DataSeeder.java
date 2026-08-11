@@ -59,7 +59,8 @@ public class DataSeeder implements CommandLineRunner {
         // Floor dimensions in the same units as bin x/y. Sized with headroom
         // past the furthest seeded bin (x = 30, y = 35) so an admin can add
         // stock beyond the sample layout without resizing first.
-        warehouseRepository.save(new Warehouse("Main Warehouse", 40, 45));
+        // Matches the product UI demo floor (60 x 45) with room for more aisles.
+        warehouseRepository.save(new Warehouse("Main Warehouse", 60, 45));
 
         // Packing station - the fixed start/end point for every route
         BinLocation packStation = new BinLocation("PACK-01", 0, 0);

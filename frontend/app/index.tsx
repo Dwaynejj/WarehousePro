@@ -1,17 +1,26 @@
 import { Redirect } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
+
+import { useSessionRole } from '@/hooks/use-session-role';
+import { landingRouteForRole } from '@/lib/role';
 
 /**
- * App entry point.
- *
- * Removing the template's `(tabs)/index.tsx` leaves nothing matching "/", which
- * would land a cold start on expo-router's Unmatched Route screen. Redirecting
- * to onboarding also keeps the tab bar behind the auth flow: signin does
- * router.replace('/routes'), which is the first point tabs become reachable.
- *
- * This is a static redirect, not an auth guard - it does not check for an
- * existing session, so a signed-in user still starts at onboarding. Wiring that
- * up is a separate step.
+ * Cold start: send signed-in users to their portal; everyone else to onboarding.
  */
 export default function Index() {
-  return <Redirect href="/onboarding" />;
+  const session = useSessionRole();
+
+  if (session.status === 'loading') {
+    return (
+      <View className="flex-1 items-center justify-center bg-slate-900">
+        <ActivityIndicator color="#f97316" />
+      </View>
+    );
+  }
+
+  if (session.status === 'signed-in') {
+    return <Redirect href={landingRouteForRole(session.role)} />;
+  }
+
+  return <Redirect href="/(auth)/onboarding" />;
 }

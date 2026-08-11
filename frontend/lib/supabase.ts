@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupportedStorage } from '@supabase/supabase-js';
+import { Platform } from 'react-native';
 
 // Read as static `process.env.X` member expressions. Expo's Babel plugin inlines
 // EXPO_PUBLIC_* vars at build time by matching this exact shape; computed access
@@ -15,15 +16,47 @@ if (!supabaseUrl || !supabasePublishableKey) {
   );
 }
 
+/**
+ * AsyncStorage touches `window` on web and crashes Expo's static/SSR render
+ * pass where `window` is undefined. Use localStorage in the browser and a
+ * no-op memory store during SSR.
+ */
+const memoryStore = new Map<string, string>();
+
+const webStorage: SupportedStorage = {
+  getItem: (key) => {
+    if (typeof window === 'undefined') {
+      return Promise.resolve(memoryStore.get(key) ?? null);
+    }
+    return Promise.resolve(window.localStorage.getItem(key));
+  },
+  setItem: (key, value) => {
+    if (typeof window === 'undefined') {
+      memoryStore.set(key, value);
+      return Promise.resolve();
+    }
+    window.localStorage.setItem(key, value);
+    return Promise.resolve();
+  },
+  removeItem: (key) => {
+    if (typeof window === 'undefined') {
+      memoryStore.delete(key);
+      return Promise.resolve();
+    }
+    window.localStorage.removeItem(key);
+    return Promise.resolve();
+  },
+};
+
 export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
   auth: {
-    // Without an explicit adapter the client reaches for localStorage, which does
-    // not exist on native, and silently falls back to in-memory storage. Sessions
-    // would then vanish on every app restart.
-    storage: AsyncStorage,
+    storage: Platform.OS === 'web' ? webStorage : AsyncStorage,
     autoRefreshToken: true,
     persistSession: true,
-    // Native apps have no URL to read an auth callback from.
+    // Always false: Expo web SSR runs createClient without window/localStorage,
+    // so auto-detect would try PKCE exchange with an empty memory store.
+    // /auth/callback calls createSessionFromUrl once on the client instead.
     detectSessionInUrl: false,
+    flowType: 'pkce',
   },
 });

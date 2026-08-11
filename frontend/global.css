@@ -1,3 +1,49 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .screen {
+    @apply flex-1 bg-slate-50 dark:bg-slate-950;
+  }
+
+  .page-title {
+    @apply font-display text-3xl tracking-tight text-slate-900 dark:text-white;
+  }
+
+  .page-subtitle {
+    @apply mt-1 font-sans text-base text-slate-500 dark:text-slate-400;
+  }
+
+  .card {
+    @apply rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900;
+  }
+
+  .card-soft {
+    @apply rounded-2xl border border-slate-200/80 bg-white/90 dark:border-slate-800 dark:bg-slate-900/90;
+  }
+
+  .label {
+    @apply font-semibold text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500;
+  }
+
+  .body-text {
+    @apply font-sans text-slate-700 dark:text-slate-300;
+  }
+
+  .muted {
+    @apply font-sans text-slate-500 dark:text-slate-400;
+  }
+
+  .field {
+    @apply h-12 rounded-xl border border-slate-300 bg-white px-3 font-sans text-base text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white;
+  }
+
+  .accent-pill {
+    @apply rounded-full px-2.5 py-1;
+  }
+
+  .desk-surface {
+    @apply bg-slate-100 dark:bg-slate-950;
+  }
+}

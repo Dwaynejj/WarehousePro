@@ -12,12 +12,13 @@ We are building WarehousePro, a warehouse picking-route app that computes
 optimized picking routes through a warehouse and tracks picker productivity.
 
 The app includes:
-- Login and role-based routing (picker vs. manager)
+- Login and role-based routing (picker vs. admin) with **separate portals**
+- Public signup is **picker-only** — admins are invited (`/admin/invite`) or seeded
 - Picker home screen with an assigned order queue
-- Route map screen showing the optimized pick order and total distance
+- Route screen showing the optimized pick order and total distance
 - Pick confirmation and order-complete flow
-- Manager dashboard with route history and productivity analytics
-- Order management (create/assign picking orders)
+- Admin dashboard with route history and productivity analytics
+- Order management (create picking orders) in the admin portal only
 
 Keep the implementation simple and readable. This is a student capstone
 project — favor the smallest working version of a feature over a polished
@@ -86,9 +87,10 @@ Use this folder structure:
 
 ```
 app/
-  (auth)/          — login, forgot-password, reset-password screens
-  (picker)/        — picker home, route-map, pick-confirm, order-complete
-  (manager)/       — dashboard, order-management, analytics
+  (auth)/          — picker onboarding, signup, signin
+  (picker)/        — home (queue), route, settings
+  (admin)/         — dashboard, create order, history, settings
+  admin/           — admin signin + invite (outside tab shells)
 components/
 constants/
 data/
@@ -252,16 +254,16 @@ When building a feature:
 
 ## Authentication
 
-The Spring Boot backend does not yet have auth endpoints (`/api/routes/*` are
-currently open). Until `POST /api/auth/login` exists on the backend:
-- Build the login screen against a mocked `useAuthStore` (fake token, role
-  set locally) so picker/manager screens can be built in parallel.
-- Do not build a full custom auth system in the frontend in the meantime —
-  keep the stub minimal and swap in real calls once the backend endpoint
-  exists.
-- When the real endpoint lands, store the returned token in
-  expo-secure-store and attach it via the Axios interceptor in
-  `lib/api/client.ts`.
+The Spring Boot backend does not yet protect `/api/**`. The frontend uses
+Supabase Auth for sessions:
+
+- Public `(auth)/signup` **always** sets `role=picker`. Never offer admin there.
+- Admin portal entry is `/admin/signin` only (no signup link).
+- New admins: `/admin/invite` + `EXPO_PUBLIC_ADMIN_INVITE_CODE`, or Supabase
+  Dashboard metadata (`role=admin`). Do not link invite from onboarding.
+- `RequireAdmin` / `RequirePicker` are presentation guards. Real enforcement
+  still needs Spring Security validating JWTs later.
+- Prefer expo-secure-store for tokens when moving off Supabase client storage.
 
 ---
 

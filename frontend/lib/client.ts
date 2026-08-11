@@ -15,6 +15,11 @@ if (!apiBaseUrl) {
 // which Spring treats as a different route and answers with 404.
 const baseUrl = apiBaseUrl.replace(/\/+$/, '');
 
+/** Current API root (no trailing slash). Useful for connection banners. */
+export function getApiBaseUrl(): string {
+  return baseUrl;
+}
+
 /**
  * Error thrown when the backend answers with a non-2xx status.
  *
@@ -67,10 +72,13 @@ async function request(url: string, init: RequestInit): Promise<Response> {
   try {
     return await fetch(url, init);
   } catch (cause) {
+    const usingLocalhost = /localhost|127\.0\.0\.1/i.test(url);
     throw new Error(
-      `Could not reach the backend at ${url}. Confirm the device is on the same ` +
-        `network and EXPO_PUBLIC_API_BASE_URL points at the machine's LAN address, ` +
-        `not localhost.`,
+      `Could not reach the backend at ${url}. ` +
+        (usingLocalhost
+          ? 'Start Spring Boot on port 8080 (mvn spring-boot:run in backend/). ' +
+            'If you are on a physical phone, set EXPO_PUBLIC_API_BASE_URL to your computer LAN IP instead of localhost.'
+          : 'Confirm the phone and computer are on the same Wi‑Fi and the Spring Boot server is running.'),
       { cause },
     );
   }

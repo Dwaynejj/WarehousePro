@@ -197,9 +197,11 @@ export function AisleManager({
   return (
     <View>
       {aisles.length === 0 ? (
-        <View className="items-center rounded-2xl border border-slate-200 bg-white p-8">
+        <View className="card items-center p-8">
           <MaterialCommunityIcons name="view-grid-outline" size={40} color="#cbd5e1" />
-          <Text className="mt-3 text-base font-semibold text-slate-900">No aisles yet</Text>
+          <Text className="mt-3 font-semibold text-base text-slate-900 dark:text-white">
+            No aisles yet
+          </Text>
           <Text className="mt-1 text-center text-sm text-slate-500">
             Add your first aisle to start building the warehouse layout.
           </Text>
@@ -213,13 +215,15 @@ export function AisleManager({
         return (
           <View
             key={aisle.id}
-            className="mb-3 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            className="card mb-3 overflow-hidden">
             <View className="flex-row items-center border-b border-slate-100 p-4">
               <View className="h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
                 <MaterialCommunityIcons name="view-grid-outline" size={20} color="#475569" />
               </View>
               <View className="ml-3 flex-1">
-                <Text className="text-base font-bold text-slate-900">{aisle.name}</Text>
+                <Text className="font-bold text-base text-slate-900 dark:text-white">
+                  {aisle.name}
+                </Text>
                 <Text className="text-xs text-slate-500">
                   {aisle.bins.length} {aisle.bins.length === 1 ? 'shelf' : 'shelves'}
                   {aisle.bins.length > 0 ? ` · x ${aisle.bins[0].x}` : ''}

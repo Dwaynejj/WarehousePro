@@ -1,38 +1,51 @@
 package com.propro.warehouse.config;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Allows the Expo dev server to call this API from a browser.
+ * Allows the Expo web app to call this API from a browser.
  *
- * Without this, the browser's preflight OPTIONS request is rejected with
- * 403 "Invalid CORS request", so fetch() fails before any response exists -
- * which surfaces in the app as a bare "Network request failed".
+ * Without CORS, browser preflight fails and fetch() looks like a network error.
+ * Native apps do not send Origin and are unaffected.
  *
- * These are local dev server origins only. Native iOS/Android builds send no
- * Origin header at all and are unaffected by this config either way.
+ * Localhost is always allowed. Add production frontends with
+ * CORS_ALLOWED_ORIGINS (comma-separated), e.g.
+ * https://warehousepro.vercel.app,https://www.example.com
  */
 @Configuration
 public class CorsConfig {
 
-    private static final String[] LOCAL_DEV_ORIGINS = {
-            "http://localhost:8081",   // Expo Metro dev server (expo start --web)
-            "http://localhost:19006",  // Legacy Expo webpack web server
-            "http://localhost:8080"    // This backend, for browser calls to its own API
-    };
+    @Value("${CORS_ALLOWED_ORIGINS:}")
+    private String extraOrigins;
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                // Covers every controller: /api/routes, /api/aisles, /api/bins, /api/zones
+                List<String> patterns = new ArrayList<>(List.of(
+                        "http://localhost:*",
+                        "http://127.0.0.1:*"));
+
+                if (extraOrigins != null && !extraOrigins.isBlank()) {
+                    Arrays.stream(extraOrigins.split(","))
+                            .map(String::trim)
+                            .filter(s -> !s.isEmpty())
+                            .forEach(patterns::add);
+                }
+
                 registry.addMapping("/api/**")
-                        .allowedOrigins(LOCAL_DEV_ORIGINS)
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedOriginPatterns(patterns.toArray(String[]::new))
+                        // PATCH is required for pick + complete order endpoints.
+                        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .maxAge(3600);
             }
